@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <tuple>
 
 namespace std {
     template <> struct hash<std::pair<size_t, size_t>> {
@@ -16,11 +17,56 @@ namespace std {
     };
 }
 
-template <class T, T Val>
+template <class T, T DefVal>
 class Matrix {
     using low_layer_map = std::unordered_map<std::pair<size_t, size_t>, T>;
 
 public:
+    class Value {
+    public:
+        Value(Matrix& parent, std::pair<size_t, size_t>&& coord)
+        :   m_parent(parent),
+            m_coordinates(std::move(coord))
+        { }
+
+        Value& operator=(const T& val) {
+            m_parent.set_value(m_coordinates, val);
+
+            return *this;
+        }
+
+        bool operator==(const T& val) const noexcept {
+            return m_parent.get_value(m_coordinates) == val;
+        }
+
+    private:
+        Matrix& m_parent;
+        std::pair<size_t, size_t> m_coordinates;
+    };
+
+    class iterator {
+    public:
+        explicit iterator(typename low_layer_map::iterator&& it)
+        :   m_it(std::move(it))
+        { }
+
+        std::tuple<size_t, size_t, T> operator*() const {
+            return std::make_tuple(m_it->first.first, m_it->first.second, m_it->second);
+        }
+
+        iterator& operator++() {
+            ++m_it;
+            return *this;
+        }
+
+        bool operator!=(const iterator& rhs) const noexcept {
+            return m_it != rhs.m_it;
+        }
+
+    private:
+        typename low_layer_map::iterator m_it;
+    };
+
     Matrix() noexcept = default;
     Matrix(const Matrix& rhs) = default;
     Matrix(Matrix&& rhs) noexcept = default;
@@ -29,35 +75,33 @@ public:
     Matrix& operator=(const Matrix& rhs) = default;
     Matrix& operator=(Matrix&& rhs) noexcept = default;
 
+    iterator begin() {
+        return iterator(m_map.begin());
+    }
+
+    iterator end() {
+        return iterator(m_map.end());
+    }
+
     size_t size() const noexcept {
         return m_map.size();
     }
 
-    T& operator()(size_t x, size_t y, T def = Val) noexcept {
-        auto p = std::make_pair(x, y);
-        if (!m_map.count(p))
-            return def;
-        else
-            return m_map.at(p);
+    Value operator()(size_t x, size_t y) {
+        return Value(*this, std::make_pair(x, y));
     }
 
-    const T& operator()(size_t x, size_t y, T def = Val) const noexcept {
-        auto p = std::make_pair(x, y);
-        if (!m_map.count(p))
-            return def;
+    T get_value(const std::pair<size_t, size_t>& coord) const noexcept {
+        if (!m_map.count(coord))
+            return DefVal;
         else
-            return m_map.at(p);
+            return m_map.at(coord);
     }
 
-    const T& get_element(size_t x, size_t y) const {
-        auto p = std::make_pair(x, y);
-        if (!m_map.count(p))
-            return m_default;
-        else
-            return m_map.at(p);
+    void set_value(const std::pair<size_t, size_t>& coord, const T& val) {
+        m_map[coord] = val;
     }
 
 private:
     low_layer_map m_map;
-    const T m_default = Val;
 };

@@ -14,5 +14,14 @@ int main() {
     assert(matrix(100, 100) == 314);
     assert(matrix.size() == 1);
 
+    for(auto c : matrix)
+    {
+        int x;
+        int y;
+        int v;
+        std::tie(x, y, v) = c;
+        std::cout << x << y << v << std::endl;
+    }
+
     return 0;
 }
