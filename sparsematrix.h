@@ -51,7 +51,9 @@ public:
         { }
 
         std::tuple<size_t, size_t, T> operator*() const {
-            return std::make_tuple(m_it->first.first, m_it->first.second, m_it->second);
+            return std::make_tuple(m_it->first.first,
+                                   m_it->first.second,
+                                   m_it->second);
         }
 
         iterator& operator++() {
@@ -99,7 +101,11 @@ public:
     }
 
     void set_value(const std::pair<size_t, size_t>& coord, const T& val) {
-        m_map[coord] = val;
+        if (val == DefVal) {
+            m_map.erase(coord);
+        } else {
+            m_map[coord] = val;
+        }
     }
 
 private:
