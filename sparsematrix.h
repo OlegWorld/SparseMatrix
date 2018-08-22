@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <tuple>
+#include <iostream>
 
 namespace std {
     template <> struct hash<std::pair<size_t, size_t>> {
@@ -12,7 +13,7 @@ namespace std {
         {
             const result_type h1 ( std::hash<size_t>{}(s.first) );
             const result_type h2 ( std::hash<size_t>{}(s.second) );
-            return h1 + (h2 << 32);
+            return h1 + (h2 << 32u);
         }
     };
 }
@@ -37,6 +38,10 @@ public:
 
         bool operator==(const T& val) const noexcept {
             return m_parent.get_value(m_coordinates) == val;
+        }
+
+        T get() const noexcept {
+            return m_parent.get_value(m_coordinates);
         }
 
     private:
@@ -111,3 +116,13 @@ public:
 private:
     low_layer_map m_map;
 };
+
+template <class T, T DefVal>
+void print_submatrix(Matrix<T, DefVal>& m, size_t x1, size_t y1, size_t x2, size_t y2) {
+    for(size_t i = x1; i < x2 + 1; i++) {
+        for(size_t j = y1; j < y2 + 1; j++) {
+            std::cout << m(i, j).get() << ' ';
+        }
+        std::cout << std::endl;
+    }
+}
