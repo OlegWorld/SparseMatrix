@@ -22,3 +22,15 @@ target_link_libraries(SparseMatrixTest ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_IN
 add_test(test SparseMatrixTest)
 
 enable_testing()
+
+install(TARGETS matrix RUNTIME DESTINATION bin)
+
+set(CPACK_GENERATOR DEB)
+
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_PATCH "$ENV{TRAVIS_BUILD_NUMBER}")
+
+set(CPACK_PACKAGE_CONTACT osmironov@gmail.com)
+
+include(CPack)
