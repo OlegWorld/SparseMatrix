@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.7)
-project(SparseMatrix)
+cmake_minimum_required(VERSION 3.5)
+project(matrix)
 
 find_package(GTest REQUIRED)
 find_package (Threads REQUIRED)
