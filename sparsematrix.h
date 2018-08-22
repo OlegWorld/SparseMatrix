@@ -126,3 +126,14 @@ void print_submatrix(Matrix<T, DefVal>& m, size_t x1, size_t y1, size_t x2, size
         std::cout << std::endl;
     }
 }
+
+template <class T, T DefVal>
+void print_cells(Matrix<T, DefVal>& m) {
+    for (const auto& c : m)
+    {
+        size_t x, y;
+        int v;
+        std::tie(x, y, v) = c;
+        std::cout << "matrix(" << x << ", " << y << ") = " << v << std::endl;
+    }
+}
